@@ -12,6 +12,16 @@ from tom_targets.models import Target, TargetExtra
 
 
 class UnifiedHeaderTests(TestCase):
+    def test_pages_without_charts_do_not_block_on_plotly(self):
+        for path in ['/targets/', '/accounts/login/']:
+            response = self.client.get(path, secure=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, 'plotly-basic-2.35.2.min.js')
+
+    def test_observation_charts_keep_plotly(self):
+        response = self.client.get('/observations/list/', secure=True)
+        self.assertContains(response, 'plotly-basic-2.35.2.min.js')
+
     def test_shared_pages_keep_snclock_identity_and_navigation(self):
         for path in ['/accounts/login/', '/telescope-data/']:
             response = self.client.get(path, secure=True)

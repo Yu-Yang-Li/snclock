@@ -32,6 +32,13 @@ hosts. Retain tom.snclock.com as a compatible entry; a login on one hostname doe
 not silently transfer its cookie to the other. Verify login CSRF on both hosts.
 The shared template header uses the SN Clock name and clock mark, not TOM branding.
 
+Enable gzip for CSS/JavaScript inside both hosts' `/static/` and `/assets/`
+locations (see the primary-domain fragment). Keep this tuning scoped to static
+resources, not private API responses. Check Content-Encoding and cold browser
+first-contentful-paint; cached navigation alone is not performance acceptance.
+Pages without Plotly charts override the `plotly_js` template block; pages with
+existing inline Plotly initialization retain the synchronous dependency order.
+
 - `/` renders SN Clock directly, `/source/<name>` renders the same application;
   no top-level redirect or iframe wraps the homepage.
 - Candidate -> exact target (or explicit filtered target search) -> source stays
