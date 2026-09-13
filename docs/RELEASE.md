@@ -23,6 +23,15 @@
 
 ## Real click-path acceptance
 
+For the unified primary domain, include `deploy/nginx-snclock-workspace.conf`
+inside the existing snclock.com HTTPS server. Preserve the old SN fallback and
+health routes. Add snclock.com and www.snclock.com to Django ALLOWED_HOSTS and
+their HTTPS origins to CSRF_TRUSTED_ORIGINS; keep secure, host-only session cookies
+and existing permissions. Do not redirect authenticated POST requests between
+hosts. Retain tom.snclock.com as a compatible entry; a login on one hostname does
+not silently transfer its cookie to the other. Verify login CSRF on both hosts.
+The shared template header uses the SN Clock name and clock mark, not TOM branding.
+
 - `/` renders SN Clock directly, `/source/<name>` renders the same application;
   no top-level redirect or iframe wraps the homepage.
 - Candidate -> exact target (or explicit filtered target search) -> source stays

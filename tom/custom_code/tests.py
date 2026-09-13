@@ -11,6 +11,19 @@ from tom_dataproducts.models import DataProduct
 from tom_targets.models import Target, TargetExtra
 
 
+class UnifiedHeaderTests(TestCase):
+    def test_shared_pages_keep_snclock_identity_and_navigation(self):
+        for path in ['/accounts/login/', '/telescope-data/']:
+            response = self.client.get(path, secure=True)
+            self.assertContains(response, '<title>SN Clock |')
+            self.assertContains(response, 'snclock-logo')
+            self.assertNotContains(response, 'logo-color-cropped.png')
+            self.assertNotContains(response, 'navbar-dark bg-dark')
+            for link in ['/', '/targets/', '/observations/list/', '/telescope-data/', '/dataproducts/data/', '/users/profile/']:
+                # Target and observation destinations remain in their existing dropdowns.
+                self.assertContains(response, f'href="{link}"')
+
+
 class SyncSnclockTests(TestCase):
     def test_report_name_resolves_unique_tns_prefix(self):
         target = Target.objects.create(name='AT 2099demo', type=Target.SIDEREAL,

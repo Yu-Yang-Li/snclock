@@ -13,11 +13,11 @@
   <li class="nav-item">
     <form method="post" action="{% url 'logout' %}">
       {% csrf_token %}
-      <button class="btn btn-outline-light" title="退出当前账号" type="submit">退出</button>
+      <button class="btn btn-outline-secondary" title="退出当前账号" type="submit">退出</button>
     </form>
   </li>
 {% else %}
   <li class="nav-item">
-    <a class="btn btn-outline-light" title="登录管理系统" href="{% url 'login' %}">登录</a>
+    <a class="btn btn-outline-secondary" title="登录 SN Clock" href="{% url 'login' %}">登录</a>
   </li>
 {% endif %}

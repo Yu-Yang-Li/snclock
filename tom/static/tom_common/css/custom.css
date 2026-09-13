@@ -52,6 +52,36 @@ textarea {
   width: auto;
 }
 
+/* Same product identity as the SN Clock candidate homepage. */
+body { padding-top: 0; background: #fafafa; }
+.snclock-header {
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, .08);
+  padding: 12px 24px;
+  margin-bottom: 24px;
+}
+.snclock-header > .container-fluid { max-width: 1440px; padding: 0; }
+.snclock-header .navbar-brand { gap: 12px; margin-right: 24px; color: #1d1d1f; }
+.snclock-logo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 8px; background: #1d1d1f; color: white;
+  flex-shrink: 0;
+}
+.snclock-logo svg { width: 20px; height: 20px; }
+.snclock-brand-text { font-size: 16px; font-weight: 700; line-height: 1.4; }
+.snclock-brand-text small { display: block; color: #6e6e73; font-size: 11px; font-weight: 400; }
+.snclock-header .nav-link { color: #374151; border-radius: 6px; padding: 8px; }
+.snclock-header .nav-link:hover, .snclock-header .nav-link.active { background: #f2f2f4; color: #1d1d1f; }
+.snclock-header #login-buttons { align-items: center; gap: 8px; }
+@media (max-width: 1199.98px) {
+  .snclock-header .navbar-collapse { padding-top: 12px; }
+  .snclock-header #login-buttons { align-items: flex-start; }
+}
+@media (max-width: 575.98px) {
+  .snclock-header { padding: 12px 16px; }
+  .snclock-brand-text small { display: none; }
+}
+
 .navbar .nav-link,
 .navbar .btn {
   font-size: 13px;
