@@ -52,7 +52,7 @@ preview. **Not deployed to the production ToM. No real telescope report connecte
 GitHub-hosted frontend and ToM CI both passed for implementation commit
 `05d5fae1a8dc1636b36cf4ed9cd9ba6bcfafa57c`:
 [run 34740850088](https://github.com/Yu-Yang-Li/snclock/actions/runs/34740850088).
-The private remote's commit SHA was checked against the local SHA.
+The remote's commit SHA was checked against the local SHA.
 
 Whitespace review: unchanged imported Plotly code and commented scaffold in
 `custom_code/models.py` contain inherited trailing whitespace. They were retained

@@ -91,8 +91,9 @@ their displayed/total counts; photometry supports loading additional pages.
 
 ## Release and repository policy
 
-Keep this repository private until the handed-off code and all imported assets
-have an explicit redistribution/license review. See [provenance](docs/PROVENANCE.md).
+The repository owner requested public visibility. This does not assign an
+open-source license to imported code or assets. See [provenance](docs/PROVENANCE.md)
+before reuse or redistribution; preserve all existing third-party notices.
 Credentials, user databases, raw observations and actual reports do not belong in Git.
 Changes should use scoped Conventional Commits and pull requests with passing CI.
 CI validates code; it does not automatically deploy or authorize observations.

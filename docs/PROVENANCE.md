@@ -17,7 +17,11 @@ internal contact/address audit into this repository.
 
 No explicit license was included for the handed-off reader. Preserve authorship
 and origin; do not label it MIT or otherwise assume an open-source license.
-The repository is private for the user's integration work. Public release is held
-until permission and dependency/asset notices are reviewed. Existing third-party
+On 2026-09-13 the repository owner requested public visibility after being told
+that the attachment had no explicit distribution license. That request changes
+visibility only: no ownership claim or downstream reuse/license grant is inferred.
+Seek the relevant authors' permission before redistribution of unlicensed material.
+Commit history was checked for common credential formats, production environment
+files, databases and real report files before changing visibility. Existing third-party
 vendor headers are retained; only two existing Plotly bundles and the project's
 own stylesheet/scripts were copied in the initial ToM static import.
