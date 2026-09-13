@@ -1,4 +1,4 @@
-# SN Clock ToM
+# SN Clock
 
 SN Clock is the homepage of this observation workspace. Sources, targets,
 observations and telescope data use the same origin and navigation; the homepage
