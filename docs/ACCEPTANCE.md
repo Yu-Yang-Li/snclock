@@ -26,6 +26,8 @@ preview. **Not deployed to the production ToM. No real telescope report connecte
   source counts/update time; adding isolation did not leave the frame stuck loading.
 - Main navbar URLs were checked against actual Toolkit menus; observations use
   `/observations/list/`, data use `/dataproducts/data/`, not guessed short paths.
+- Browser at 390 x 844: homepage navigation remains visible; telescope filters
+  stack vertically and remain usable. Desktop viewport was restored afterwards.
 - Proxy probes: public read 200, Django target API 200 (separate empty preview DB),
   public API POST rejected with 403. Direct sky HTML has wildcard public-read CORS
   and a sandbox CSP without same-origin privileges.
@@ -41,14 +43,16 @@ preview. **Not deployed to the production ToM. No real telescope report connecte
   temporary fail-closed boundary, not a permission integration.
 - Native facility request/status reconciliation or validate/submit/cancel. No
   proposal credentials/authorization have been validated by this integration.
-- Production deployment, real existing target/data-product/STDWeb regression and
-  mobile viewport acceptance. Test success does not establish these as complete.
+- Production deployment and real existing target/data-product/STDWeb regression.
+  Preview success does not establish production acceptance.
 - Public redistribution/license approval for imported handoff code/assets.
 - Full SN backend consolidation: this repository versions the frontend and ToM
   integration; the existing SN inference/ingestion service remains a dependency.
 
-CI definition is provided; execution of the GitHub-hosted CI must be checked
-separately rather than inferred from these local/runtime-environment results.
+GitHub-hosted frontend and ToM CI both passed for implementation commit
+`05d5fae1a8dc1636b36cf4ed9cd9ba6bcfafa57c`:
+[run 34740850088](https://github.com/Yu-Yang-Li/snclock-tom/actions/runs/34740850088).
+The private remote's commit SHA was checked against the local SHA.
 
 Whitespace review: unchanged imported Plotly code and commented scaffold in
 `custom_code/models.py` contain inherited trailing whitespace. They were retained
