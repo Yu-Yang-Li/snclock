@@ -5,7 +5,7 @@
 - Repository visibility is public at the owner's explicit request. The history
   scan found no common secret-token signatures, production environment/database
   files, or real report payloads. No open-source license is inferred for the handoff.
-- 32 Django regression tests and 3 Node display tests passed after the changes.
+- 34 Django regression tests and 3 Node display tests passed after the changes.
 - Browser: a target opened with `band=R` retains the filter after reload; clearing
   filters preserves the target and returns all 3 synthetic measurements.
 - Browser: the non-detection's reported limit 20.2 is visible without drawing it
@@ -17,6 +17,8 @@
   QA image URLs carry the same hash; stale or unversioned image requests are
   refused with HTTP 409 rather than mixing old photometry with a newer image.
 - Login links retain target/filter context; empty reports get an explicit message.
+- A bare TNS name resolves its unique AT/SN-prefixed target. Ambiguous matches
+  remain a filtered target list; no target records are merged or renamed.
 - Still preview-only: production code, data, facility submissions and permissions
   were not changed by this polish.
 

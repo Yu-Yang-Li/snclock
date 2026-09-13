@@ -1,9 +1,11 @@
 import json
+import re
 from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -61,6 +63,20 @@ def target_from_snclock(request, name):
     target = Target.objects.filter(name__iexact=target_name).only("pk").first()
     if target:
         return redirect("targets:detail", pk=target.pk)
+
+    match = re.fullmatch(r"(?:(?:AT|SN)\s*)?(\d{4}[a-z]+)", target_name, re.IGNORECASE)
+    if match:
+        canonical_name = match.group(1)
+        names = [canonical_name, f"AT {canonical_name}", f"SN {canonical_name}",
+                 f"AT{canonical_name}", f"SN{canonical_name}"]
+        aliases = Q()
+        for alias in names:
+            aliases |= Q(name__iexact=alias)
+        matches = list(Target.objects.filter(aliases).only('pk')[:2])
+        if len(matches) == 1:
+            return redirect('targets:detail', pk=matches[0].pk)
+        if len(matches) > 1:
+            target_name = canonical_name
 
     query = urlencode({"query": target_name})
     return redirect(f"{reverse('targets:list')}?{query}")

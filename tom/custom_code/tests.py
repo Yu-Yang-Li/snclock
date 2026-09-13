@@ -12,6 +12,19 @@ from tom_targets.models import Target, TargetExtra
 
 
 class SyncSnclockTests(TestCase):
+    def test_report_name_resolves_unique_tns_prefix(self):
+        target = Target.objects.create(name='AT 2099demo', type=Target.SIDEREAL,
+                                       ra=10, dec=20, permissions='OPEN')
+        response = self.client.get('/from-snclock/2099demo/', secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], f'/targets/{target.pk}/')
+
+    def test_ambiguous_tns_alias_does_not_choose_an_arbitrary_target(self):
+        for name in ['AT 2099demo', 'SN 2099demo']:
+            Target.objects.create(name=name, type=Target.SIDEREAL, ra=10, dec=20, permissions='OPEN')
+        response = self.client.get('/from-snclock/2099demo/', secure=True)
+        self.assertEqual(response['Location'], '/targets/?query=2099demo')
+
     def test_target_detail_renders_sky_context(self):
         target = Target.objects.create(
             name="AT 2026sky",
