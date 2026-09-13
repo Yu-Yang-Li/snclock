@@ -1,0 +1,20 @@
+{% load render_table from django_tables2 %}
+{% render_table table %}
+
+{% if not table.data %}
+  <div class="alert alert-info mt-3">
+    {% if user.is_authenticated %}
+      {% if empty_database %}
+        当前数据库中没有目标。可以<a href="{% url 'tom_targets:create' %}">手动创建目标</a>，
+        或从<a href="{% url 'tom_dataservices:query_list' %}">数据服务导入</a>。
+      {% else %}
+        没有目标符合当前筛选条件。
+      {% endif %}
+    {% else %}
+      请先<a href="{% url 'login' %}?next={% url 'targets:list' %}">登录</a>后查看或创建目标。
+    {% endif %}
+  </div>
+{% endif %}
+
+{% load targets_extras %}
+{% aladin_skymap_targets_oob skymap_objects %}

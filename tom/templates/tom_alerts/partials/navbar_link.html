@@ -1,0 +1,4 @@
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.namespace == 'alerts' %}active{% endif %}"
+     href="{% url 'alerts:list' %}">警报</a>
+</li>

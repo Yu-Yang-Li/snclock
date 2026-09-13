@@ -1,0 +1,18 @@
+{% load targets_extras %}
+<div class="target-button-group" role="group" aria-label="目标操作">
+  <a href="/source/{{ target.name|urlencode }}" class="btn btn-outline-primary">SN Clock</a>
+  <a href="{% url 'telescope-workspace' %}?target={{ target.name|urlencode }}" class="btn btn-outline-primary">望远镜数据</a>
+  <a href="{% url 'tom_targets:update' pk=target.id %}" title="编辑目标" class="btn btn-primary">编辑</a>
+  {% if sharing %}
+    <a href="{% url 'tom_targets:share' pk=target.id %}" title="分享目标" class="btn btn-info">分享</a>
+  {% endif %}
+  <a href="{% url 'tom_targets:delete' pk=target.id %}" title="删除目标" class="btn btn-warning">删除</a>
+  {% get_buttons %}
+</div>
+
+<style>
+  .target-button-group > * {
+    margin-bottom: 2px;
+    margin-top: 2px;
+  }
+</style>

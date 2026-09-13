@@ -1,0 +1,36 @@
+<table class="table table-sm mb-0">
+  <thead>
+    <tr><th>目标</th><th>加入时间</th><th class="text-end">来源</th></tr>
+  </thead>
+  <tbody>
+    {% for target in targets %}
+      <tr>
+        <td>
+          <a href="{% url 'targets:detail' target.id %}" title="查看 {{ target.name }}">
+            {{ target.name }}
+          </a>
+        </td>
+        <td>{{ target.created|date:"Y-m-d H:i" }}</td>
+        <td class="text-end">
+          {% if target.extra_fields.snclock_url %}
+            <a class="source-link" href="/source/{{ target.name|urlencode }}" title="在 SN Clock 中查看">
+              SN Clock <i class="fa fa-external-link" aria-hidden="true"></i>
+            </a>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="3">
+          {% if authenticated %}
+            当前还没有目标。
+          {% else %}
+            请先<a href="{% url 'login' %}?next={% url 'targets:list' %}">登录</a>后查看目标。
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

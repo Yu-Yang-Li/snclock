@@ -1,0 +1,16 @@
+{% extends 'tom_common/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="auth-panel">
+    <h1>登录</h1>
+    <p class="text-muted">登录后可创建目标、安排观测和管理数据。</p>
+    <form action="{% url 'login' %}?next={{ next }}" method="post" class="form">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% bootstrap_button "登录" button_type="submit" button_class="btn btn-primary w-100" %}
+    </form>
+  </div>
+</div>
+{% endblock %}

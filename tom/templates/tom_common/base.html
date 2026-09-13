@@ -1,0 +1,60 @@
+{% load static django_bootstrap5 tom_common_extras %}
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="SN Clock 瞬变源目标与观测管理系统">
+
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'tom_common/css/main.css' %}">
+    {% get_theme as theme %}
+    {% if theme %}
+      <link rel="stylesheet" href="{% static theme %}">
+    {% endif %}
+    <link rel="stylesheet" href="{% static 'tom_common/css/custom.css' %}?v=20260729-2">
+    {% block additional_css %}{% endblock %}
+    <link rel="icon" type="image/x-icon" href="{% static 'tom_common/img/favicon-32.ico' %}" sizes="32x32">
+
+    {% bootstrap_javascript %}
+    <script src="{% static 'vendor/plotly/plotly-basic-2.35.2.min.js' %}"></script>
+    <script src="{% static 'tom_common/js/htmx.min.js' %}" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>{% tom_name %} | {% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <img src="{% static 'tom_common/img/logo-color-cropped.png' %}" class="img-fluid" alt="">
+          {% tom_name %}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#main-navigation" aria-controls="main-navigation"
+                aria-expanded="false" aria-label="展开或收起导航">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="main-navigation">
+          <ul class="navbar-nav me-auto">
+            {% include 'tom_common/navbar_content.html' %}
+          </ul>
+          <ul class="navbar-nav ms-auto" id="login-buttons">
+            {% include 'tom_common/partials/navbar_login.html' %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main role="main" class="container">
+      {% include 'tom_common/partials/messages.html' %}
+      <div class="content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    {% block javascript %}{% endblock %}
+    {% block extra_javascript %}{% endblock %}
+  </body>
+</html>

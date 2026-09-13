@@ -1,0 +1,136 @@
+{% extends 'tom_common/base.html' %}
+{% load targets_extras dataproduct_extras dataservices_extras %}
+{% load crispy_forms_tags %}
+
+{% block title %}目标列表{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-10">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div>
+        <h1 class="h3 mb-1">目标列表</h1>
+        <span class="text-muted">共 {{ target_count }} 个目标</span>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">添加目标</button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'targets:create' %}">手动创建</a></li>
+            <li><a class="dropdown-item" href="{% url 'targets:import' %}">批量导入</a></li>
+          </ul>
+        </div>
+        {% catalog_query_menu %}
+        <button type="button" class="btn btn-outline-primary" title="导出当前筛选结果"
+                onclick="const queryString = new URLSearchParams(new FormData(document.querySelector('form.mb-3'))).toString(); window.location.href = '{% url 'targets:export' %}?' + queryString;">
+          导出结果
+        </button>
+      </div>
+    </div>
+
+    {% aladin_skymap skymap_objects %}
+    <div id="aladin-targets-data"></div>
+
+    <hr>
+
+    <form id="grouping-form" action="{% url 'targets:add-remove-grouping' %}" method="post">
+      {% csrf_token %}
+      <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <span class="text-muted">重复目标</span>
+        <button type="submit" class="btn btn-outline-success btn-sm" name="merge">合并所选目标</button>
+      </div>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <label for="target-grouping" class="text-muted">目标分组</label>
+        <select id="target-grouping" name="grouping" class="form-select w-auto">
+          {% for grouping in groupings %}
+            <option value="{{ grouping.id }}">{{ grouping.name }}</option>
+          {% endfor %}
+        </select>
+        <input type="hidden" value="{{ query_string }}" name="query_string">
+        <input type="hidden" value="False" id="isSelectAll" name="isSelectAll">
+        <button type="submit" class="btn btn-outline-primary btn-sm" name="add">加入</button>
+        <button type="submit" class="btn btn-outline-primary btn-sm" name="move">移动</button>
+        <button type="submit" class="btn btn-outline-danger btn-sm" name="remove">移除</button>
+      </div>
+    </form>
+
+    {% block target_table_content %}
+      <hr>
+      <form id="filter-form" class="mb-3"
+            hx-get="{% url 'tom_targets:list' %}"
+            hx-target="div.table-container"
+            hx-swap="outerHTML"
+            hx-indicator=".progress">
+        {% crispy filter.form %}
+      </form>
+
+      <div class="progress">
+        <div class="indeterminate"></div>
+      </div>
+
+      <div class="table-container">
+        {% include "tom_targets/partials/target_table_partial.html" %}
+      </div>
+      <hr>
+    {% endblock target_table_content %}
+  </div>
+</div>
+
+<script>
+  function translateTargetList(root) {
+    const translations = {
+      "General search": "搜索名称、坐标或字段",
+      "Advanced ›": "高级筛选 ›",
+      "Target Type": "目标类型",
+      "Target Group": "目标分组",
+      "Cone Search": "坐标锥形检索",
+      "Cone Search (Target)": "按目标锥形检索",
+      "Discovery date": "发现时间",
+      "Discovery mag": "发现星等",
+      "Discovery filter": "发现滤光片",
+      "Object type": "天体类型",
+      "Redshift": "红移",
+      "Host redshift": "宿主红移",
+      "Sn clock texp": "爆发时刻预测 t_exp",
+      "Sn clock ci lower": "置信区间下限",
+      "Sn clock ci upper": "置信区间上限",
+      "Data source": "数据来源",
+      "Snclock url": "SN Clock 地址",
+      "Last update": "最近更新",
+      "Name": "名称",
+      "Right Ascension": "赤经 RA",
+      "Declination": "赤纬 Dec",
+      "Sidereal": "恒星时目标",
+      "Non-sidereal": "非恒星时目标",
+      "min": "最小",
+      "max": "最大"
+    };
+    root.querySelectorAll("label, legend, th, option, .input-group-text, a[data-bs-toggle='collapse']").forEach((element) => {
+      const value = element.textContent.trim();
+      if (translations[value]) {
+        element.textContent = translations[value];
+      }
+    });
+    const placeholders = {
+      "RA, Dec, Radius": "赤经, 赤纬, 半径",
+      "Target Name, Radius": "目标名称, 半径"
+    };
+    root.querySelectorAll("[placeholder]").forEach((element) => {
+      if (placeholders[element.placeholder]) {
+        element.placeholder = placeholders[element.placeholder];
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => translateTargetList(document));
+  document.body.addEventListener("htmx:afterSwap", (event) => translateTargetList(event.target));
+  document.body.addEventListener("change", function(event) {
+    if (event.target && event.target.classList.contains("header-checkbox")) {
+      document.querySelectorAll('input[name="selected-target"]').forEach((checkbox) => {
+        checkbox.checked = event.target.checked;
+      });
+    }
+  });
+</script>
+{% endblock content %}

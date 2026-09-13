@@ -1,0 +1,23 @@
+{% load gravatar %}
+<ul class="list-unstyled mb-0">
+  {% for comment in comment_list %}
+    <li class="media mb-3">
+      <img class="me-3 rounded-circle img-fluid avatar" src="{% gravatar_url comment.user.email 50 %}" alt="">
+      <div class="media-body">
+        <small class="text-muted">
+          {{ comment.user.first_name }} {{ comment.user.last_name }}
+          {% if not object %}
+            评论了 <a href="{{ comment.content_object.get_absolute_url }}">{{ comment.content_object.name }}</a>
+          {% endif %}
+          · {{ comment.submit_date|date:"Y-m-d H:i" }}
+          {% if comment.user == user or user.is_superuser %}
+            <a href="{% url 'comment-delete' comment.id %}" class="btn btn-sm btn-danger float-end">删除</a>
+          {% endif %}
+        </small>
+        <p class="mb-0">{{ comment.comment|truncatewords:30 }}</p>
+      </div>
+    </li>
+  {% empty %}
+    <li class="text-muted">暂无协作记录。</li>
+  {% endfor %}
+</ul>

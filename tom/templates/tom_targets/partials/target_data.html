@@ -1,0 +1,81 @@
+{% load tom_common_extras targets_extras %}
+<dl class="row">
+  {% for target_name in target.names %}
+    <dt class="col-sm-6">{% if forloop.first %}名称{% else %}&nbsp;{% endif %}</dt>
+    <dd class="col-sm-6">{{ target_name }}</dd>
+  {% endfor %}
+  {% for key, value in target.as_dict.items %}
+    {% if value != None and value != '' and key != 'name' %}
+      <dt class="col-sm-6" title="{% help_text target key %}">
+        {% if key == 'type' %}目标类型
+        {% elif key == 'permissions' %}访问权限
+        {% elif key == 'ra' %}赤经 RA
+        {% elif key == 'dec' %}赤纬 Dec
+        {% elif key == 'epoch' %}历元
+        {% elif key == 'created' %}创建时间
+        {% elif key == 'modified' %}修改时间
+        {% elif key == 'scheme' %}坐标方案
+        {% else %}{% verbose_name target key %}
+        {% endif %}
+      </dt>
+      <dd class="col-sm-6">
+        {% if key == 'type' and value == 'SIDEREAL' %}恒星时目标
+        {% elif key == 'type' and value == 'NON_SIDEREAL' %}非恒星时目标
+        {% elif key == 'permissions' and value == 'OPEN' %}公开
+        {% elif key == 'permissions' and value == 'PRIVATE' %}私有
+        {% else %}{{ value|truncate_value_for_display }}
+        {% endif %}
+      </dd>
+    {% endif %}
+    {% if key == 'ra' %}
+      <dt class="col-sm-6">时分秒</dt>
+      <dd class="col-sm-6">{{ value|deg_to_sexigesimal:"hms" }}</dd>
+    {% endif %}
+    {% if key == 'dec' %}
+      <dt class="col-sm-6">度分秒</dt>
+      <dd class="col-sm-6">{{ value|deg_to_sexigesimal:"dms" }}</dd>
+      {% if target.constellation %}
+        <dt class="col-sm-6">星座</dt>
+        <dd class="col-sm-6">{{ target.constellation }}</dd>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</dl>
+
+<dl class="row">
+  {% for key, value in extras.items %}
+    <dt class="col-sm-6">
+      {% if key == 'discovery_date' %}发现时间
+      {% elif key == 'discovery_mag' %}发现星等
+      {% elif key == 'discovery_filter' %}发现滤光片
+      {% elif key == 'object_type' %}天体类型
+      {% elif key == 'redshift' %}红移
+      {% elif key == 'host_redshift' %}宿主红移
+      {% elif key == 'sn_clock_texp' %}爆发时刻预测 t_exp
+      {% elif key == 'sn_clock_ci_lower' %}置信区间下限
+      {% elif key == 'sn_clock_ci_upper' %}置信区间上限
+      {% elif key == 'data_source' %}数据来源
+      {% elif key == 'snclock_url' %}SN Clock
+      {% elif key == 'last_update' %}最近同步
+      {% else %}{{ key }}
+      {% endif %}
+    </dt>
+    <dd class="col-sm-6">
+      {% if key == 'snclock_url' and value %}
+        <a href="/source/{{ target.name|urlencode }}">查看源页面</a>
+      {% else %}
+        {{ value }}
+      {% endif %}
+    </dd>
+  {% endfor %}
+</dl>
+
+{% if target.tags %}
+  <p>标签</p>
+  <dl class="row">
+    {% for key, value in target.tags.items %}
+      <dt class="col-sm-6">{{ key }}</dt>
+      <dd class="col-sm-6">{{ value }}</dd>
+    {% endfor %}
+  </dl>
+{% endif %}

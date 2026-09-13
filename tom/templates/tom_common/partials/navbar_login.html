@@ -1,0 +1,23 @@
+{% load tom_common_extras %}
+{% navbar_app_addons 'right' %}
+{% if user.is_authenticated %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'user-profile' %}">
+      {% if user.first_name or user.last_name %}
+        {{ user.first_name }} {{ user.last_name }}（{{ user.username }}）
+      {% else %}
+        {{ user.username }}
+      {% endif %}
+    </a>
+  </li>
+  <li class="nav-item">
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button class="btn btn-outline-light" title="退出当前账号" type="submit">退出</button>
+    </form>
+  </li>
+{% else %}
+  <li class="nav-item">
+    <a class="btn btn-outline-light" title="登录管理系统" href="{% url 'login' %}">登录</a>
+  </li>
+{% endif %}

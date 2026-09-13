@@ -1,0 +1,10 @@
+{% extends 'tom_common/base.html' %}
+{% load user_extras %}
+{% block title %}用户管理{% endblock %}
+{% block content %}
+<h1 class="h3">用户与权限</h1>
+{% include_app_user_lists %}
+{% group_list %}
+<hr>
+{% user_list %}
+{% endblock %}

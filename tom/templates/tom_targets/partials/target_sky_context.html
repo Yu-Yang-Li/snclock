@@ -1,0 +1,54 @@
+{% load static %}
+<section class="sky-context"
+         data-ra="{{ object.ra }}"
+         data-dec="{{ object.dec }}"
+         data-target-name="{{ object.name }}">
+  <div class="sky-context-heading">
+    <div>
+      <h3>天区与宿主核验</h3>
+      <p>中心标记为当前目标，可叠加邻近星表检查坐标与宿主。</p>
+    </div>
+    <a href="https://aladin.cds.unistra.fr/AladinLite/"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="打开 Aladin Lite 官方页面">
+      Aladin Lite <i class="fa fa-external-link" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <div class="sky-context-map-shell">
+    <div class="sky-context-map"
+         role="img"
+         aria-label="{{ object.name }} 周边天区交互图"></div>
+    <div class="sky-context-map-message" aria-live="polite">正在加载天区图...</div>
+  </div>
+
+  <div class="sky-context-catalogs" aria-label="星表图层状态">
+    <span class="sky-context-catalog sky-context-target">
+      <i aria-hidden="true"></i>当前目标
+    </span>
+    <span class="sky-context-catalog sky-context-simbad"
+          data-catalog-status="simbad">
+      <i aria-hidden="true"></i>SIMBAD：等待
+    </span>
+    <span class="sky-context-catalog sky-context-ned"
+          data-catalog-status="ned">
+      <i aria-hidden="true"></i>NED：等待
+    </span>
+    <span class="sky-context-catalog sky-context-gaia"
+          data-catalog-status="gaia">
+      <i aria-hidden="true"></i>Gaia DR3：等待
+    </span>
+  </div>
+
+  <p class="sky-context-note">
+    点击图层中的源查看星表信息；外部服务短时不可用不影响目标坐标与处理流程。
+  </p>
+</section>
+
+<link rel="stylesheet"
+      href="{% static 'tom_common/css/target-sky-context.css' %}?v=20260731-2">
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"
+        charset="utf-8"></script>
+<script src="{% static 'tom_common/js/target-sky-context.js' %}?v=20260731-3"
+        defer></script>

@@ -1,0 +1,63 @@
+{% extends 'tom_common/base.html' %}
+{% block title %}STDWeb FITS 处理：{{ target.name }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+  <div>
+    <h2 class="h4 mb-1">STDWeb FITS 处理</h2>
+    <p class="text-muted mb-0">
+      {{ target.name }}，RA {{ target.ra|floatformat:5 }}°，Dec {{ target.dec|floatformat:5 }}°
+    </p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'targets:detail' target.pk %}?tab=manage-data">
+    <i class="fa fa-arrow-left me-1" aria-hidden="true"></i>返回数据管理
+  </a>
+</div>
+
+<div class="alert alert-info">
+  提交时会把目标坐标写入 STDWeb 任务。提交后请先检查 FITS 头、滤镜和星表，再启动测光。
+</div>
+
+{% if rows %}
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>FITS 文件</th>
+          <th>上传时间</th>
+          <th>STDWeb 状态</th>
+          <th class="text-end">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.product.data.name }}</td>
+            <td>{{ row.product.created|date:"Y-m-d H:i" }}</td>
+            <td>{{ row.state_label }}</td>
+            <td class="text-end">
+              {% if row.task_id %}
+                <a class="btn btn-sm btn-outline-primary" href="{{ row.task_url }}" target="_blank"
+                   rel="noopener noreferrer">
+                  <i class="fa fa-external-link me-1" aria-hidden="true"></i>打开任务 {{ row.task_id }}
+                </a>
+              {% else %}
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="data_product_id" value="{{ row.product.pk }}">
+                  <button class="btn btn-sm btn-primary" type="submit">
+                    <i class="fa fa-upload me-1" aria-hidden="true"></i>提交
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="alert alert-secondary mb-0">
+    该目标还没有 FITS 数据。请返回“数据管理”，上传类型为“FITS File”的文件。
+  </div>
+{% endif %}
+{% endblock %}

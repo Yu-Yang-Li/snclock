@@ -1,0 +1,281 @@
+:root {
+  --snc-ink: #1f2933;
+  --snc-muted: #667381;
+  --snc-border: #dce3e9;
+  --snc-surface: #f7f9fb;
+  --snc-accent: #1769aa;
+  --snc-accent-soft: #eaf3fa;
+}
+
+html,
+body {
+  letter-spacing: 0;
+}
+
+body {
+  color: var(--snc-ink);
+  font-family: "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei UI",
+    "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  letter-spacing: 0;
+}
+
+.navbar {
+  min-height: 56px;
+}
+
+.navbar-brand {
+  align-items: center;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 650;
+  gap: 8px;
+}
+
+.navbar-brand img {
+  max-height: 24px;
+  width: auto;
+}
+
+.navbar .nav-link,
+.navbar .btn {
+  font-size: 13px;
+}
+
+.dropdown-item {
+  font-size: 13px;
+  padding-bottom: .45rem;
+  padding-top: .45rem;
+}
+
+main.container {
+  max-width: 1180px;
+}
+
+.btn {
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.workspace-header {
+  align-items: flex-end;
+  border-bottom: 1px solid var(--snc-border);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: .4rem 0 1rem;
+}
+
+.workspace-header h1 {
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1.3;
+  margin: 0 0 .3rem;
+}
+
+.workspace-header p {
+  color: var(--snc-muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.workspace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.sync-strip {
+  align-items: center;
+  background: var(--snc-surface);
+  border-bottom: 1px solid var(--snc-border);
+  color: var(--snc-muted);
+  display: flex;
+  font-size: 12px;
+  gap: .5rem;
+  margin-bottom: 1.1rem;
+  padding: .55rem .75rem;
+}
+
+.sync-strip strong {
+  color: var(--snc-ink);
+  font-weight: 650;
+}
+
+.sync-dot {
+  background: #2e8b57;
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+.workspace-grid h2 {
+  font-size: 16px;
+  font-weight: 650;
+  margin: 0;
+}
+
+.section-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: .55rem;
+  min-height: 26px;
+}
+
+.section-heading > a {
+  color: var(--snc-accent);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.workspace-panel {
+  background: #fff;
+  border: 1px solid var(--snc-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.target-panel .table {
+  font-size: 13px;
+  margin: 0;
+}
+
+.target-panel .table > :not(caption) > * > * {
+  border-bottom-color: #edf1f4;
+  padding: .7rem .8rem;
+  vertical-align: middle;
+}
+
+.target-panel thead th {
+  background: var(--snc-surface);
+  color: var(--snc-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.source-link {
+  color: var(--snc-accent);
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.quick-actions > a {
+  align-items: center;
+  border-bottom: 1px solid #edf1f4;
+  color: var(--snc-ink);
+  display: grid;
+  gap: .7rem;
+  grid-template-columns: 20px minmax(0, 1fr) 12px;
+  padding: .72rem .8rem;
+  text-decoration: none;
+}
+
+.quick-actions > a:last-child {
+  border-bottom: 0;
+}
+
+.quick-actions > a:hover {
+  background: var(--snc-surface);
+}
+
+.quick-actions > a > .fa:first-child {
+  color: var(--snc-accent);
+  text-align: center;
+}
+
+.quick-actions span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.quick-actions strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.quick-actions small {
+  color: var(--snc-muted);
+  font-size: 11px;
+}
+
+.auth-shell {
+  display: flex;
+  justify-content: center;
+  padding-top: 1.5rem;
+}
+
+.auth-panel {
+  border: 1px solid var(--snc-border);
+  border-radius: 6px;
+  max-width: 400px;
+  padding: 1.4rem;
+  width: 100%;
+}
+
+.auth-panel h1 {
+  font-size: 22px;
+  font-weight: 650;
+}
+
+.table {
+  font-size: 13px;
+}
+
+.table th {
+  white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+  body {
+    font-size: 13px;
+  }
+
+  .navbar-brand {
+    font-size: 14px;
+  }
+
+  .workspace-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workspace-header h1 {
+    font-size: 20px;
+  }
+
+  .workspace-actions {
+    width: 100%;
+  }
+
+  .workspace-actions .btn {
+    flex: 1;
+  }
+
+  .sync-strip {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .target-panel {
+    overflow-x: auto;
+  }
+}

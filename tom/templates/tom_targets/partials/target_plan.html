@@ -1,0 +1,9 @@
+{% load django_bootstrap5 %}
+<div id="plan-panel">
+  <form action="{% url 'targets:detail' target.id %}" method="get" class="form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% bootstrap_button "计算可观测性" button_type="submit" button_class="btn btn-primary" value="Plan" %}
+  </form>
+  {{ visibility_graph|safe }}
+</div>

@@ -1,0 +1,73 @@
+{% extends 'tom_common/base.html' %}
+{% load targets_extras tom_common_extras %}
+{% block title %}首页{% endblock %}
+{% block content %}
+<header class="workspace-header">
+  <div>
+    <h1>后随观测工作台</h1>
+    <p>管理 SN Clock 筛选出的瞬变源、后随观测与数据产品。</p>
+  </div>
+  <div class="workspace-actions">
+    <a class="btn btn-primary" href="{% url 'targets:list' %}">
+      <i class="fa fa-list me-1" aria-hidden="true"></i>目标列表
+    </a>
+    <a class="btn btn-outline-secondary" href="https://snclock.com/">
+      <i class="fa fa-clock-o me-1" aria-hidden="true"></i>SN Clock
+    </a>
+  </div>
+</header>
+
+<div class="sync-strip" role="status">
+  <span class="sync-dot" aria-hidden="true"></span>
+  <strong>自动同步</strong>
+  <span>SN Clock 每 45 分钟更新一次 TOM 目标</span>
+</div>
+
+<div class="row g-3 workspace-grid">
+  <section class="col-lg-8" aria-labelledby="latest-targets-title">
+    <div class="section-heading">
+      <h2 id="latest-targets-title">最近目标</h2>
+      <a href="{% url 'targets:list' %}">查看全部</a>
+    </div>
+    <div class="workspace-panel target-panel">
+      {% recent_targets %}
+    </div>
+  </section>
+
+  <section class="col-lg-4" aria-labelledby="quick-actions-title">
+    <div class="section-heading">
+      <h2 id="quick-actions-title">常用操作</h2>
+    </div>
+    <div class="workspace-panel quick-actions">
+      <a href="{% url 'targets:list' %}">
+        <i class="fa fa-crosshairs" aria-hidden="true"></i>
+        <span><strong>浏览目标</strong><small>筛选与查看同步源</small></span>
+        <i class="fa fa-angle-right" aria-hidden="true"></i>
+      </a>
+      <a href="{% url 'tom_observations:list' %}">
+        <i class="fa fa-binoculars" aria-hidden="true"></i>
+        <span><strong>观测记录</strong><small>查看后随执行状态</small></span>
+        <i class="fa fa-angle-right" aria-hidden="true"></i>
+      </a>
+      <a href="{% url 'tom_calendar:calendar' %}">
+        <i class="fa fa-calendar" aria-hidden="true"></i>
+        <span><strong>观测日历</strong><small>按时间检查计划</small></span>
+        <i class="fa fa-angle-right" aria-hidden="true"></i>
+      </a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'targets:create' %}">
+          <i class="fa fa-plus" aria-hidden="true"></i>
+          <span><strong>手动添加</strong><small>创建新的跟踪目标</small></span>
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+      {% else %}
+        <a href="{% url 'login' %}">
+          <i class="fa fa-sign-in" aria-hidden="true"></i>
+          <span><strong>登录管理</strong><small>创建观测与编辑目标</small></span>
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

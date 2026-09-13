@@ -1,0 +1,80 @@
+{% extends 'tom_common/base.html' %}
+{% load django_bootstrap5 static cache %}
+{% block title %}数据产品{% endblock %}
+{% block additional_css %}
+<link rel="stylesheet" href="{% static 'tom_observations/css/main.css' %}">
+{% endblock %}
+{% block content %}
+{% include 'tom_dataproducts/partials/js9_scripts.html' %}
+<div class="row">
+  <div class="col-md-10">
+    <h1 class="h3">数据产品</h1>
+    {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>文件</th>
+            <th>目标</th>
+            <th>观测</th>
+            <th>分组</th>
+            <th>类型</th>
+            <th>预览</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in object_list %}
+            <tr>
+              <td><a href="{{ product.data.url }}">{{ product.get_file_name|truncatechars:40 }}</a></td>
+              <td><a href="{% url 'tom_targets:detail' product.target.id %}?tab=manage-data">{{ product.target.name|truncatechars:40 }}</a></td>
+              <td>
+                {% if product.observation_record.id %}
+                  <a href="{% url 'tom_observations:detail' product.observation_record.id %}">{{ product.observation_record|truncatechars:40 }}</a>
+                {% endif %}
+              </td>
+              <td>
+                {% for group in product.group.all %}
+                  <a href="{% url 'tom_dataproducts:group-detail' group.id %}">{{ group.name|truncatechars:40 }}</a>
+                {% endfor %}
+              </td>
+              <td>{% if product.data_product_type %}{{ product.get_type_display }}{% endif %}</td>
+              <td>
+                {% if product.get_file_extension == '.fz' or product.get_file_extension == '.fits' %}
+                  {% if product.get_preview %}
+                    {% cache None thumbnail product.id %}
+                      <img src="{{ product.get_preview }}" class="thumbnail" alt="数据预览"><br>
+                    {% endcache %}
+                    {% include 'tom_dataproducts/partials/js9_button.html' with url=product.data.url only %}
+                  {% else %}
+                    <img src="{% static 'tom_dataproducts/img/placeholder.png' %}" class="thumbnail" alt="暂无预览">
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6">暂无数据产品。完成观测后可以在这里归档数据。</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+  </div>
+
+  <aside class="col-md-2">
+    <form action="" method="get" class="form">
+      {% bootstrap_form filter.form %}
+      {% bootstrap_button "筛选" button_type="submit" button_class="btn btn-primary" %}
+      {% url 'tom_dataproducts:list' as reset_link %}
+      {% bootstrap_button "重置" button_type="link" button_class="btn btn-secondary" href=reset_link title="重置" %}
+    </form>
+    <h2 class="h5 mt-3">数据分组</h2>
+    {% for group in product_groups %}
+      <p>
+        <a href="{% url 'tom_dataproducts:group-detail' group.id %}">{{ group.name }}</a><br>
+        <span class="text-muted">产品数：{{ group.dataproduct_set.count }}</span>
+      </p>
+    {% endfor %}
+    <a href="{% url 'tom_dataproducts:group-list' %}">管理分组</a>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'tom_common/base.html' %}
+{% block title %}系统状态{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+  <div>
+    <h2 class="h4 mb-1">SN Clock 工作台状态</h2>
+    <p class="text-muted mb-0">按当前请求实时检查，不使用浏览器缓存。</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'system-status' %}">
+    <i class="fa fa-refresh me-1" aria-hidden="true"></i>重新检查
+  </a>
+</div>
+
+{% if stack.ok %}
+  <div class="alert alert-success">发现、观测管理和 FITS 处理三段服务均可用。</div>
+{% else %}
+  <div class="alert alert-danger">至少一段服务不可用，请查看下表。</div>
+{% endif %}
+
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        <th>模块</th>
+        <th>状态</th>
+        <th>用途</th>
+        <th>当前情况</th>
+        <th class="text-end">入口</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in stack.rows %}
+        <tr>
+          <td class="fw-semibold">{{ row.name }}</td>
+          <td>
+            {% if row.ok %}
+              <span class="badge bg-success">正常</span>
+            {% else %}
+              <span class="badge bg-danger">异常</span>
+            {% endif %}
+          </td>
+          <td>{{ row.purpose }}</td>
+          <td>{{ row.detail }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="{{ row.url }}" target="_blank"
+               rel="noopener noreferrer" aria-label="打开 {{ row.name }}">
+              <i class="fa fa-external-link" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

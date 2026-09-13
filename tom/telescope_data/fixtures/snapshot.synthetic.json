@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2099-01-01T00:00:00Z",
+  "sources": [{"name": "2099demo", "aliases": ["SN2099demo", "AT2099demo"], "status": "ongoing", "ra": "10.0", "dec": "20.0", "type": "synthetic"}],
+  "targetLifecycle": {"2099demo": {"status": "ongoing", "label": "进行中"}},
+  "sourceData": {
+    "2099demo": {
+      "photometry": [
+        {"mjd": 87704.0, "date": "2099-01-01 00:00:00", "band": "r", "mag": 19.1, "plotMag": 20.1, "offset": 1, "err": 0.1, "tel": "LT direct", "detected": true, "templateSubtracted": false},
+        {"mjd": 87704.1, "date": "2099-01-01 02:24:00", "band": "R", "mag": null, "limMag": 20.2, "err": null, "tel": "TRT direct", "detected": false, "templateSubtracted": false},
+        {"mjd": 87704.2, "date": "2099-01-01 04:48:00", "band": "g", "mag": 19.4, "err": 0.2, "tel": "TTT", "detected": true}
+      ],
+      "remMedia": [{"date": "20990101", "telescope": "LT", "band": "r", "rawCount": 3, "items": [
+        {"stage": "raw", "src": "assets/LT/2099demo/20990101/raw.jpg", "available": true},
+        {"stage": "psf_after", "src": null, "available": false}
+      ]}]
+    }
+  },
+  "submissionMonitor": {"generated_at": "2099-01-01T00:00:00Z", "targets": {"2099demo": {"submissions": [
+    {"id": "synthetic-rg", "telescope": "LCO", "external_id": "SYNTHETIC", "group_state": "PENDING", "raw_files": 0, "status": "processed", "submitted_at": "2099-01-01T00:00:00Z"}
+  ]}}},
+  "dailyHistory": [{"date": "2099-01-01", "generated_at": "2099-01-01T00:00:00Z", "entries": [
+    {"target": "2099demo", "telescope": "REM", "status": "not_configured", "added_count": 0, "reason": "Synthetic example; no REM submission adapter"}
+  ]}]
+}

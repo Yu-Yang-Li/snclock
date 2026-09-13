@@ -1,0 +1,13 @@
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">数据服务</a>
+  <ul class="dropdown-menu">
+    {% for data_service in data_services %}
+      <li>
+        <a class="dropdown-item" href="{% url 'dataservices:create' %}?data_service={{ data_service }}"
+           title="{{ data_service }}">{{ data_service }}</a>
+      </li>
+    {% endfor %}
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="{% url 'dataservices:query_list' %}">已保存查询</a></li>
+  </ul>
+</li>

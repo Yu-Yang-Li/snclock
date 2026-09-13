@@ -1,0 +1,80 @@
+{% extends 'tom_common/base.html' %}
+{% load django_bootstrap5 observation_extras %}
+{% block title %}观测记录{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-10">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1 class="h3">观测记录</h1>
+      {% update_status_button %}
+    </div>
+    {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    {% observation_distribution filter.qs %}
+
+    <form action="" method="get">
+      <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <span>将所选观测加入或移出分组</span>
+        {{ filter.form.observationgroup }}
+        <button type="submit" name="action" value="add" class="btn btn-primary btn-sm">加入</button>
+        <button type="submit" name="action" value="remove" class="btn btn-danger btn-sm">移除</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>选择</th>
+              <th>详情</th>
+              <th>目标</th>
+              <th>设备</th>
+              <th>状态</th>
+              <th>开始时间</th>
+              <th>分组</th>
+              <th>已存数据</th>
+              <th>下载全部</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for observation in object_list %}
+              <tr>
+                <td><input type="checkbox" name="selected" value="{{ observation.id }}"></td>
+                <td><a class="btn btn-success btn-sm" href="{% url 'tom_observations:detail' observation.id %}">查看</a></td>
+                <td><a href="{% url 'tom_targets:detail' observation.target.id %}?tab=observations">{{ observation.target.name }}</a></td>
+                <td>{{ observation.facility }}</td>
+                <td>{{ observation.status }}</td>
+                <td>{{ observation.scheduled_start }}</td>
+                <td>{% for group in observation.observationgroup_set.all %}{{ group.name }} {% endfor %}</td>
+                <td>{{ observation.dataproduct_set.count }}</td>
+                <td>
+                  {% if observation.status == 'COMPLETED' %}
+                    <form method="post" action="{% url 'tom_dataproducts:save' observation.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" value="ALL" name="products">
+                      <input type="hidden" value="{{ observation.facility }}" name="facility">
+                      <input type="submit" value="保存" class="btn btn-primary btn-sm">
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="9">暂无观测记录。请从<a href="{% url 'tom_targets:list' %}">目标列表</a>选择目标并创建观测。</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+    {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+  </div>
+
+  <aside class="col-md-2">
+    <form action="" method="get" class="form">
+      {% bootstrap_form filter.form %}
+      {% bootstrap_button "筛选" button_type="submit" button_class="btn btn-primary" %}
+      {% url 'tom_observations:list' as reset_link %}
+      {% bootstrap_button "重置" button_type="link" button_class="btn btn-secondary" title="重置" href=reset_link %}
+    </form>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% load tom_common_extras %}
+<li class="nav-item">
+  <a class="nav-link" href="/">首页</a>
+</li>
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle {% if request.resolver_match.namespace == 'targets' %}active{% endif %}"
+     href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">目标</a>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url 'targets:list' %}">目标列表</a></li>
+    <li><a class="dropdown-item" href="{% url 'targets:targetgrouping' %}">目标分组</a></li>
+    <li><a class="dropdown-item" href="{% url 'targets:target-selection' %}">目标筛选</a></li>
+  </ul>
+</li>
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle {% if request.resolver_match.namespace == 'observations' %}active{% endif %}"
+     href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">观测</a>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url 'tom_observations:list' %}">观测记录</a></li>
+    <li><a class="dropdown-item" href="{% url 'tom_observations:group-list' %}">观测分组</a></li>
+    <li><a class="dropdown-item" href="{% url 'tom_observations:template-list' %}">观测模板</a></li>
+    <li><a class="dropdown-item" href="{% url 'tom_observations:facility-status' %}">设备状态</a></li>
+  </ul>
+</li>
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'telescope-workspace' %}active{% endif %}" href="{% url 'telescope-workspace' %}">望远镜数据</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.namespace == 'dataproducts' %}active{% endif %}"
+     href="{% url 'tom_dataproducts:list' %}">数据</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'system-status' %}active{% endif %}"
+     href="{% url 'system-status' %}">系统状态</a>
+</li>
+{% navbar_app_addons %}
+<li class="nav-item">
+  <a class="nav-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}"
+     href="{% url 'user-list' %}">用户</a>
+</li>

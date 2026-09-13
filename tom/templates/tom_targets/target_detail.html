@@ -1,0 +1,161 @@
+{% extends 'tom_common/base.html' %}
+{% load comments django_bootstrap5 tom_common_extras targets_extras observation_extras dataproduct_extras static cache %}
+{% load dataservices_extras %}
+{% block title %}目标 {{ object.name }}{% endblock %}
+{% block additional_css %}
+<link rel="stylesheet" href="{% static 'tom_targets/css/main.css' %}">
+{% endblock %}
+{% block content %}
+<script>
+  const updateUrlWithTab = (tabId) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", tabId);
+    history.replaceState({}, document.title, url.toString());
+  };
+
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("#tabs .nav-link").forEach((tab) => {
+      tab.addEventListener("click", function() {
+        updateUrlWithTab(this.id.replace("-tab", ""));
+      });
+    });
+    const tabQuery = new URL(window.location.href).searchParams.get("tab");
+    if (tabQuery) {
+      const tabElement = document.querySelector(`a[href="#${tabQuery}"]`);
+      if (tabElement) tabElement.click();
+    }
+
+    const translations = {
+      "Recent Photometry": "最近测光",
+      "Timestamp": "时间",
+      "Magnitude": "星等",
+      "No recent photometry.": "暂无近期测光。",
+      "Survey View": "巡天视图",
+      "Field of view": "视场",
+      "Scale bar": "比例尺",
+      "Update": "更新",
+      "Save Image": "保存图像",
+      "Apply an observation template": "应用观测模板",
+      "Observation template*": "观测模板*",
+      "Cadence strategy": "观测节奏策略",
+      "Apply": "应用",
+      "Start Time": "开始时间",
+      "End Time": "结束时间",
+      "Maximum Airmass": "最大气团质量",
+      "Comments": "协作记录"
+    };
+
+    const translateDetail = (root) => {
+      root.querySelectorAll("h3, h4, h5, label, th, td, button, a, option, .form-label").forEach((element) => {
+        const value = element.textContent.trim();
+        if (translations[value]) element.textContent = translations[value];
+      });
+      root.querySelectorAll("[title]").forEach((element) => {
+        if (element.title === "Copy Coordinates") element.title = "复制坐标";
+      });
+      root.querySelectorAll("[placeholder]").forEach((element) => {
+        if (element.placeholder === "Search for an object...") element.placeholder = "搜索天体...";
+      });
+    };
+
+    const content = document.querySelector("main");
+    translateDetail(content);
+    new MutationObserver(() => translateDetail(content)).observe(content, {
+      childList: true,
+      subtree: true
+    });
+  });
+</script>
+
+<div class="row">
+  <div class="col-md-4">
+    <div id="target-info">
+      {% target_feature object %}
+      {% if object.future_observations %}
+        <div class="alert alert-success">已有 {{ object.future_observations|length }} 条待执行观测</div>
+      {% endif %}
+      {% target_unknown_statuses object %}
+      {% target_buttons object %}
+      {% target_data object %}
+      {% recent_photometry object limit=3 %}
+      {% if object.type == 'SIDEREAL' and object.ra != None and object.dec != None %}
+        {% include 'tom_targets/partials/target_sky_context.html' %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <ul class="nav nav-tabs" role="tablist" id="tabs">
+      <li class="nav-item"><a class="nav-link active" id="observe-tab" href="#observe" role="tab" data-bs-toggle="tab">计划观测</a></li>
+      <li class="nav-item"><a class="nav-link" id="observations-tab" href="#observations" role="tab" data-bs-toggle="tab">观测记录</a></li>
+      <li class="nav-item"><a class="nav-link" id="manage-data-tab" href="#manage-data" role="tab" data-bs-toggle="tab">数据管理</a></li>
+      <li class="nav-item"><a class="nav-link" id="manage-groups-tab" href="#manage-groups" role="tab" data-bs-toggle="tab">分组管理</a></li>
+      <li class="nav-item"><a class="nav-link" id="photometry-tab" href="#photometry" role="tab" data-bs-toggle="tab">测光</a></li>
+      <li class="nav-item"><a class="nav-link" id="spectroscopy-tab" href="#spectroscopy" role="tab" data-bs-toggle="tab">光谱</a></li>
+      {% include_app_tabs %}
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane active" id="observe">
+        <h4>创建观测</h4>
+        {% observing_buttons object %}
+        <hr>
+        {% observationtemplate_run object %}
+        <hr>
+        <h4>可观测性</h4>
+        {% if object.type == 'SIDEREAL' %}
+          {% target_plan %}
+          {% moon_distance object %}
+        {% elif target.type == 'NON_SIDEREAL' %}
+          <p>当前暂不支持非恒星时目标的气团质量计算。</p>
+        {% endif %}
+      </div>
+
+      <div class="tab-pane" id="observations">
+        {% existing_observation_form object %}
+        <h4>观测记录</h4>
+        <button hx-get="{% url 'targets:render-observation-table' pk=target.id %}"
+                hx-target="#observation-table" hx-indicator=".progress" hx-disabled-elt="this"
+                class="btn btn-secondary mb-3">刷新观测列表</button>
+        <div id="observation-table">
+          {% include 'tom_targets/partials/observation_table.html' %}
+        </div>
+      </div>
+
+      <div class="tab-pane" id="manage-data">
+        {% if user.is_authenticated %}
+          <a class="btn btn-outline-primary mb-3" href="{% url 'stdweb-target' object.pk %}">
+            <i class="fa fa-flask me-1" aria-hidden="true"></i>STDWeb FITS 处理
+          </a>
+          {% upload_dataproduct object %}
+          <hr>
+          {% query_single_target_data_service object %}
+          <hr>
+          {% update_data_from_dataservice %}
+          <hr>
+        {% endif %}
+        {% dataproduct_list_for_target object %}
+      </div>
+
+      <div class="tab-pane" id="manage-groups">{% target_groups target %}</div>
+      <div class="tab-pane" id="photometry">
+        {% photometry_for_target target %}
+        {% get_photometry_data object %}
+      </div>
+      <div class="tab-pane" id="spectroscopy">{% spectroscopy_for_target target %}</div>
+      {% include_app_tab_divs %}
+
+      {% comments_enabled as comments_are_enabled %}
+      {% if comments_are_enabled %}
+        <hr>
+        <h5>协作记录</h5>
+        {% render_comment_list for object %}
+        {% url 'targets:detail' object.id as next %}
+        {% if user.is_authenticated %}
+          {% render_comment_form for object %}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
