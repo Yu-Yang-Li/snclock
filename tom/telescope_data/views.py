@@ -2,6 +2,7 @@
 import mimetypes
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.http import FileResponse, JsonResponse
@@ -151,18 +152,27 @@ def workspace(request):
     context = {'synthetic': bool(getattr(settings, 'TELESCOPE_SNAPSHOT_SYNTHETIC', False))}
     if not request.user.is_authenticated:
         context['notice'] = '请登录后查看望远镜数据。'
+        context['login_url'] = reverse('login') + '?' + urlencode({'next': request.get_full_path()})
     elif not request.user.is_staff:
         context['notice'] = '日报数据目前仅向获授权的管理人员开放。'
     else:
         try:
             source = reader()
             context.update(summary=source.read('summary'), targets=source.targets())
+            context['selected_target'] = context['targets'][0]['target_id'] if context['targets'] else None
             if request.GET.get('target'):
                 try:
                     context['selected_target'] = source.resolve_target(request.GET['target'])
                 except SnapshotError:
                     context.pop('summary', None)
                     context['notice'] = '这份日报尚未包含该目标，不会显示其他目标的数据。'
+            if context.get('selected_target'):
+                selected = source.sources[context['selected_target']]
+                context['target_name'] = selected['name']
+                context['target_url'] = reverse('target-from-snclock', args=[selected['name']])
+            if not context['targets']:
+                context.pop('summary', None)
+                context['notice'] = '这份日报尚未包含任何目标。'
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             context['notice'] = '尚未接入真实日报。请由管理员配置日报与质控图片目录。'
     response = render(request, 'telescope_data/workspace.html', context)

@@ -1,5 +1,23 @@
 # Acceptance — 2026-09-13
 
+## Follow-up polish
+
+- Repository visibility is public at the owner's explicit request. The history
+  scan found no common secret-token signatures, production environment/database
+  files, or real report payloads. No open-source license is inferred for the handoff.
+- 32 Django regression tests and 3 Node display tests passed after the changes.
+- Browser: a target opened with `band=R` retains the filter after reload; clearing
+  filters preserves the target and returns all 3 synthetic measurements.
+- Browser: the non-detection's reported limit 20.2 is visible without drawing it
+  as a detection or passing it to a model. UTC midnight displays as 08:00 Beijing.
+- Chinese state labels retain native codes and the contradictory PENDING /
+  processed / zero-file warning. Unknown codes remain unknown.
+- UI checks each response and paginated page against the displayed report's
+  SHA256. A version mismatch clears results and requires a page refresh.
+- Login links retain target/filter context; empty reports get an explicit message.
+- Still preview-only: production code, data, facility submissions and permissions
+  were not changed by this polish.
+
 Status: implemented in an isolated checkout and validated in a loopback-only
 preview. **Not deployed to the production ToM. No real telescope report connected.**
 

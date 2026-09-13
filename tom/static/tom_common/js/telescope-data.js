@@ -6,12 +6,20 @@
   const status = document.getElementById('telescope-status');
   const more = document.getElementById('telescope-more');
   const plot = document.getElementById('telescope-lightcurve');
+  const display = window.telescopeDisplay;
+  const expectedSnapshot = form.dataset.snapshotSha256;
+  const generated = document.getElementById('telescope-generated');
+  generated.textContent = display.timestamp(generated.dateTime);
+  const restored = new URLSearchParams(location.search);
+  for (const field of ['telescope', 'band', 'date_from', 'date_to']) {
+    if (restored.has(field)) form.elements.namedItem(field).value = restored.get(field);
+  }
   let controller;
   let generation = 0;
   let points = [];
   let nextOffset = null;
   let activeFilters;
-  const text = value => value === null || value === undefined ? '未提供' : String(value);
+  const text = display.text;
   const yesNo = value => value === true ? '是' : value === false ? '否' : '未提供';
   function element(tag, content, className) {
     const node = document.createElement(tag);
@@ -50,7 +58,7 @@
     const groups = new Map();
     for (const row of points) {
       const tr = element('tr');
-      for (const value of [row.telescope, row.band, row.mjd, row.mag, row.err, yesNo(row.detected), yesNo(row.templateSubtracted)]) tr.append(element('td', text(value)));
+      for (const value of [row.telescope, row.band, row.mjd, row.mag, row.err, row.limMag, yesNo(row.detected), yesNo(row.templateSubtracted)]) tr.append(element('td', text(value)));
       table.append(tr);
       // Unknown/non-detections are not silently promoted to detections or upper limits.
       if (row.detected !== true || !Number.isFinite(row.mjd) || !Number.isFinite(row.mag)) continue;
@@ -62,6 +70,12 @@
       trace.x.push(row.mjd);
       trace.y.push(row.mag);
       trace.error_y.array.push(Number.isFinite(row.err) && row.err >= 0 ? row.err : null);
+    }
+    if (!points.length) {
+      const row = element('tr');
+      const cell = element('td', '没有符合当前筛选条件的测光记录；可清除筛选后重试。');
+      cell.colSpan = 8;
+      row.append(cell); table.append(row);
     }
     if (window.Plotly && groups.size) {
       window.Plotly.react(plot, [...groups.values()], {
@@ -78,7 +92,10 @@
     container.replaceChildren(element('p', `显示 ${data.count} / ${data.total} 条快照记录。`));
     for (const row of data.items) {
       const card = element('dl', undefined, 'border rounded p-3');
-      for (const [key, label] of fields) { card.append(element('dt', label), element('dd', text(row[key]))); }
+      for (const [key, label] of fields) {
+        const value = key.includes('status') ? display.state(row[key]) : key === 'submitted_at' ? display.timestamp(row[key]) : text(row[key]);
+        card.append(element('dt', label), element('dd', value));
+      }
       if (row.consistency_warnings?.length) card.append(element('p', '状态存在矛盾：不能据此认定本次请求已完成。', 'text-danger'));
       container.append(card);
     }
@@ -89,7 +106,7 @@
     container.replaceChildren(element('p', `显示 ${data.count} / ${data.total} 条质控记录（不使用测光 UTC 日期筛选）。`));
     for (const row of data.items) {
       const card = element('div', undefined, 'col-md-6');
-      card.append(element('p', `${text(row.telescope)} · ${text(row.band)} · ${text(row.date)} · ${text(row.stage)}`));
+      card.append(element('p', `${text(row.telescope)} · ${text(row.band)} · ${text(row.date)} · ${display.state(row.stage)}`));
       // Server emits opaque authenticated same-origin image URLs, never upstream src.
       if (row.asset_url?.startsWith('/telescope-data/assets/')) {
         const img = element('img');
@@ -109,7 +126,19 @@
     const signal = controller.signal;
     const version = ++generation;
     if (!append) { activeFilters = Object.fromEntries(new FormData(form)); points = []; nextOffset = null; clear(); }
+    if (!append) {
+      const url = new URL(location.href);
+      url.search = '';
+      for (const [key, value] of Object.entries(activeFilters)) if (value) url.searchParams.set(key, value);
+      history.replaceState(null, '', url);
+      const targetSelect = form.elements.namedItem('target');
+      const name = targetSelect.selectedOptions[0]?.textContent || activeFilters.target;
+      const targetLink = document.getElementById('telescope-target-link');
+      targetLink.href = `/from-snclock/${encodeURIComponent(name)}/`;
+      targetLink.textContent = `查看 ${name} 的目标与观测`;
+    }
     more.disabled = true;
+    status.className = 'text-muted';
     status.textContent = '正在读取日报快照…';
     try {
       const filters = activeFilters;
@@ -118,24 +147,33 @@
         ? [fetchSection('photometry', filters, signal, nextOffset)]
         : ['photometry', 'requests', 'qa', 'daily'].map(section => fetchSection(section, filters, signal)));
       if (version !== generation) return;
+      if (!display.sameSnapshot(expectedSnapshot, results)) throw new Error('日报已更新。请刷新页面后查看，避免混用不同批次的数据。');
       const [photometry, requests, qa, daily] = results;
       points = append ? points.concat(photometry.items) : photometry.items;
       nextOffset = photometry.next_offset;
       renderPoints();
       if (!append) {
-        renderRecords('telescope-requests', requests, [['telescope', '望远镜'], ['external_id', '设施请求标识'], ['submitted_at', '提交时刻（日报原值）'], ['facility_status', '设施状态'], ['raw_files', '本请求文件数'], ['reported_status', '日报处理状态']]);
+        renderRecords('telescope-requests', requests, [['telescope', '望远镜'], ['external_id', '设施请求标识'], ['submitted_at', '提交时刻'], ['facility_status', '设施状态'], ['raw_files', '本请求文件数'], ['reported_status', '日报处理状态']]);
         renderQA(qa);
         renderRecords('telescope-daily', daily, [['date', '北京时间报告日'], ['telescope', '望远镜'], ['status', '报告状态'], ['added_count', '新增记录'], ['reason', '说明']]);
       }
-      status.textContent = `已加载 ${points.length} / ${photometry.total} 个测光点；快照生成时间：${text(photometry.generated_at)}。`;
+      status.textContent = `已加载 ${points.length} / ${photometry.total} 个测光点；日报生成：${display.timestamp(photometry.generated_at)}。`;
       more.hidden = nextOffset === null;
     } catch (error) {
       if (version !== generation || error.name === 'AbortError') return;
       clear(); points = []; nextOffset = null;
+      status.className = 'text-danger';
       status.textContent = error.message;
+      const retry = element('a', ' 刷新页面');
+      retry.href = location.href;
+      status.append(retry);
     } finally { if (version === generation) more.disabled = false; }
   }
   form.addEventListener('submit', event => { event.preventDefault(); load(); });
   more.addEventListener('click', () => load(true));
+  document.getElementById('telescope-reset').addEventListener('click', () => {
+    for (const field of ['telescope', 'band', 'date_from', 'date_to']) form.elements.namedItem(field).value = '';
+    load();
+  });
   load();
 })();

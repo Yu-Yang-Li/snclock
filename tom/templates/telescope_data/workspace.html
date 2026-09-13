@@ -7,27 +7,31 @@
 </header>
 {% if synthetic %}<div class="alert alert-warning">合成演示数据，不是真实观测，也不会下发观测。</div>{% endif %}
 {% if notice %}<div class="alert alert-info">{{ notice }}</div>{% endif %}
+{% if login_url %}<a class="btn btn-primary" href="{{ login_url }}">登录并返回此目标</a>{% endif %}
 {% if summary %}
-<p>日报生成：{{ summary.generated_at }} · {{ summary.target_count }} 个目标 · {{ summary.photometry_count }} 个测光点</p>
+<p>日报生成：<time id="telescope-generated" datetime="{{ summary.generated_at }}">{{ summary.generated_at }}</time> · {{ summary.target_count }} 个目标 · {{ summary.photometry_count }} 个测光点</p>
 <p class="text-muted">当前为日报快照，不代表设施实时状态。观测下发和取消尚未启用。</p>
-<form id="telescope-filters" class="row g-2 mb-3" aria-label="望远镜数据筛选">
+<p><a id="telescope-target-link" href="{{ target_url }}">查看 {{ target_name }} 的目标与观测</a></p>
+<form id="telescope-filters" class="row g-2 mb-3" aria-label="望远镜数据筛选" data-snapshot-sha256="{{ summary.snapshot_sha256 }}">
   <label class="col-md-3">目标<select name="target" class="form-select" required>{% for target in targets %}<option value="{{ target.target_id }}" {% if target.target_id == selected_target %}selected{% endif %}>{{ target.name }}</option>{% endfor %}</select></label>
   <label class="col-md-2">望远镜<select name="telescope" class="form-select"><option value="">全部</option><option>LT</option><option>REM</option><option>LCO</option><option>TRT</option></select></label>
   <label class="col-md-1">波段<input name="band" class="form-control" placeholder="如 r"></label>
   <label class="col-md-2">UTC 起日<input name="date_from" type="date" class="form-control"></label>
   <label class="col-md-2">UTC 止日<input name="date_to" type="date" class="form-control"></label>
-  <div class="col-md-2 d-flex align-items-end"><button class="btn btn-primary" type="submit">查看</button></div>
+  <div class="col-md-2 d-flex align-items-end gap-2"><button class="btn btn-primary" type="submit">查看</button><button id="telescope-reset" class="btn btn-outline-secondary" type="button">清除筛选</button></div>
 </form>
 <p class="text-muted">波段区分大小写。曲线使用原始 mag，不使用展示偏移；非探测点不自动视为有效上限。</p>
 <div id="telescope-status" role="status" aria-live="polite"></div>
 <div id="telescope-lightcurve" aria-label="原始星等光变曲线"></div>
 <h2 class="h5 mt-4">测光记录</h2>
-<div class="table-responsive"><table class="table table-sm"><thead><tr><th>望远镜</th><th>波段</th><th>MJD</th><th>mag</th><th>误差</th><th>检测</th><th>模板减除</th></tr></thead><tbody id="telescope-points"></tbody></table></div>
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>望远镜</th><th>波段</th><th>MJD</th><th>mag</th><th>误差</th><th>报告限星等</th><th>检测</th><th>模板减除</th></tr></thead><tbody id="telescope-points"></tbody></table></div>
+<p class="text-muted">报告限星等保留原始 limMag；置信水平与质量尚需核实，不自动作为模型上限约束。</p>
 <button type="button" id="telescope-more" class="btn btn-outline-secondary" hidden>加载更多测光点</button>
-<h2 class="h5 mt-4">请求状态</h2><p class="text-muted">设施状态、文件和处理状态分别显示；历史产品不能证明新请求已经完成。</p><div id="telescope-requests"></div>
+<h2 class="h5 mt-4">请求状态</h2><p class="text-muted">按目标和望远镜查看，不受波段或测光日期筛选影响。设施状态、文件和处理状态分别显示；历史产品不能证明新请求已经完成。</p><div id="telescope-requests"></div>
 <h2 class="h5 mt-4">质控图</h2><div id="telescope-qa" class="row g-3"></div>
-<p class="text-muted mt-4">每日变化按北京时间报告日查询；测光筛选日期为 UTC，二者不混用。</p>
+<p class="text-muted mt-4">每日变化使用北京时间报告日，不受波段或测光日期筛选影响。</p>
 <h2 class="h5">每日变化</h2><div id="telescope-daily"></div>
+<script src="{% static 'tom_common/js/telescope-display.js' %}" defer></script>
 <script src="{% static 'tom_common/js/telescope-data.js' %}" defer></script>
 {% endif %}
 {% endblock %}

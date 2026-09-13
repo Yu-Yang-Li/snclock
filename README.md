@@ -83,6 +83,11 @@ requests mean submission dates, not observation dates. In the UI only photometry
 receives the UTC date filter; QA archive days and Beijing daily report dates do not.
 Unknown targets are distinct from known targets with zero rows. Toolkit middleware
 may redirect a permission-denied request to login; the UI detects non-JSON responses.
+Filters survive reload, login returns to the requested target, and clearing filters
+keeps that target selected. Explicitly zoned timestamps display in Beijing time;
+timezone-free timestamps are labeled unconfirmed instead of silently converted.
+The UI rejects response/page hashes that differ from the displayed report, rather
+than mixing measurements from different snapshot versions.
 
 This subset does not implement the full attachment OpenAPI contract. Non-detections
 are not automatically validated upper limits. Report “processed” status does not

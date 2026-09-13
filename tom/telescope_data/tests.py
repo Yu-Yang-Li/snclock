@@ -111,6 +111,20 @@ class TelescopeDataTests(TestCase):
         self.assertContains(response, '尚未包含该目标')
         self.assertNotContains(response, 'id="telescope-filters"')
 
+    def test_login_keeps_requested_target(self):
+        self.client.logout()
+        response = self.get('/telescope-data/', {'target': 'SN2099demo'})
+        self.assertContains(response, '登录并返回此目标')
+        self.assertContains(response, 'next=%2Ftelescope-data%2F%3Ftarget%3DSN2099demo')
+
+    def test_workspace_includes_evidence_and_navigation(self):
+        response = self.get('/telescope-data/')
+        self.assertContains(response, 'data-snapshot-sha256="')
+        self.assertContains(response, '/from-snclock/2099demo/')
+        self.assertContains(response, '报告限星等')
+        self.assertContains(response, '清除筛选')
+        self.assertContains(response, 'telescope-display.js')
+
     def test_assets_reject_traversal_and_allow_only_raster(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

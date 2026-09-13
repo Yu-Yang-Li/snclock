@@ -17,6 +17,7 @@ jobs:
       - run: npm test && npm run build
         working-directory: frontend
       - run: node --check tom/static/tom_common/js/telescope-data.js
+      - run: node --test tom/telescope_data/display.test.cjs
   tom:
     runs-on: ubuntu-latest
     steps:
