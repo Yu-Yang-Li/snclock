@@ -113,7 +113,7 @@
         img.src = row.asset_url;
         img.alt = text(row.caption || row.label || row.stage);
         img.className = 'img-fluid'; img.loading = 'lazy';
-        img.addEventListener('error', () => img.replaceWith(element('p', '图片暂不可读取。')));
+        img.addEventListener('error', () => img.replaceWith(element('p', '图片暂不可读取；如日报已更新，请刷新页面。')));
         card.append(img);
       } else card.append(element('p', '未提供可读取的质控图。', 'text-muted'));
       container.append(card);

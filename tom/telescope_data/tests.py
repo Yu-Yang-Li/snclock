@@ -144,12 +144,14 @@ class TelescopeDataTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response['X-Content-Type-Options'], 'nosniff')
                 response.close()
+                self.assertEqual(self.get(rows[0]['asset_url'].split('?')[0]).status_code, 409)
                 self.assertEqual(self.get(rows[1]['asset_url']).status_code, 415)
                 for row in rows[2:]:
                     self.assertIsNone(row['asset_url'])
                 data['generatedAt'] = '2099-02-02T00:00:00Z'
                 report.write_text(json.dumps(data) + ' ', encoding='utf-8')
                 self.assertEqual(self.get(BASE + 'targets').json()['generated_at'], data['generatedAt'])
+                self.assertEqual(self.get(rows[0]['asset_url']).status_code, 409)
 
 
 class UnifiedHomeTests(TestCase):

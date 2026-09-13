@@ -74,7 +74,10 @@ def snapshot_response(request, section, target=None):
     if section == 'qa':
         for row in result['items']:
             row.pop('src', None)
-            row['asset_url'] = reverse('telescope-asset', args=[row['asset_id']]) if row['file_exists'] else None
+            row['asset_url'] = (
+                reverse('telescope-asset', args=[row['asset_id']]) + '?' + urlencode({'snapshot': source.sha256})
+                if row['file_exists'] else None
+            )
     result['synthetic'] = bool(getattr(settings, 'TELESCOPE_SNAPSHOT_SYNTHETIC', False))
     response = JsonResponse(result, json_dumps_params={'allow_nan': False})
     response['Cache-Control'] = 'private, no-store'
@@ -130,6 +133,8 @@ def asset(request, asset_id):
         return denied
     try:
         source = reader()
+        if request.GET.get('snapshot') != source.sha256:
+            return error('snapshot_changed', '日报版本已变化，请刷新页面后查看质控图。', 409)
         row = next((row for row in source.qa() if row['asset_id'] == asset_id), None)
         if not row or not row['file_exists']:
             return error('asset_missing', '该质控图未提供或暂不可读取。', 404)

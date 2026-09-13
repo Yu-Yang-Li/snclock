@@ -14,6 +14,8 @@
   processed / zero-file warning. Unknown codes remain unknown.
 - UI checks each response and paginated page against the displayed report's
   SHA256. A version mismatch clears results and requires a page refresh.
+  QA image URLs carry the same hash; stale or unversioned image requests are
+  refused with HTTP 409 rather than mixing old photometry with a newer image.
 - Login links retain target/filter context; empty reports get an explicit message.
 - Still preview-only: production code, data, facility submissions and permissions
   were not changed by this polish.
