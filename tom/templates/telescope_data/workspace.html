@@ -4,6 +4,7 @@
 {% block content %}
 <header class="workspace-header">
   <div><h1>望远镜数据</h1><p>LT · REM · LCO · TRT：测光、请求进展与质控。</p></div>
+  <a class="btn btn-outline-primary" href="{% url 'telescope-operations' %}">观测请求</a>
 </header>
 {% if synthetic %}<div class="alert alert-warning">合成演示数据，不是真实观测，也不会下发观测。</div>{% endif %}
 {% if notice %}<div class="alert alert-info">{{ notice }}</div>{% endif %}

@@ -54,7 +54,14 @@ TOM_NAME = 'tom_snclock'
 
 INSTALLED_APPS = TOMTOOKIT_INSTALLED_APPS + [
     'custom_code',
+    'telescope_ops',
 ]
+
+# Private local_settings supplies named proposal profiles and env-var references,
+# never browser-provided endpoints or credentials. Off by default.
+TELESCOPE_PROFILES = {}
+TELESCOPE_OPERATIONS_ENABLED = False
+TELESCOPE_REPORT_SYNC = {}
 
 SITE_ID = 1
 
