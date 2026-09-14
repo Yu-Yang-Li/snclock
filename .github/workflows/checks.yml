@@ -26,5 +26,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r tom/requirements.txt
-      - run: python -B manage.py test telescope_data custom_code --settings=tom_snclock.test_settings --noinput
+      - run: python -B manage.py test telescope_data custom_code telescope_ops --settings=tom_snclock.test_settings --noinput
+        working-directory: tom
+      - run: python -B manage.py makemigrations telescope_ops --check --dry-run --settings=tom_snclock.test_settings
         working-directory: tom

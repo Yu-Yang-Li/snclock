@@ -1,0 +1,47 @@
+{% extends 'tom_common/base.html' %}
+{% block title %}观测请求{% endblock %}
+{% block plotly_js %}{% endblock %}
+{% block content %}
+<h1>观测请求</h1>
+<p>草案不会发往望远镜。校验、批准与下发分别记录；后台任务已接收不表示设施已接受。</p>
+{% if notice %}<div class="alert alert-warning" role="status">{{ notice }}</div>{% endif %}
+{% if profiles and targets %}
+<form method="post" class="mb-4">{% csrf_token %}<input type="hidden" name="action" value="create">
+<label>目标<select name="target_id" class="form-select">{% for t in targets %}<option value="{{ t.pk }}">{{ t.name }}</option>{% endfor %}</select></label>
+<label>设施申请配置<select name="profile" class="form-select">{% for p in profiles %}<option>{{ p }}</option>{% endfor %}</select></label>
+<p class="mt-3">单次观测窗口使用 UTC（北京时间减 8 小时）。保存后请核对下发内容；不会立即发往设施。</p>
+<div class="row">
+<label class="col-md-6">窗口开始（UTC）<input type="datetime-local" name="start_utc" class="form-control"></label>
+<label class="col-md-6">窗口结束（UTC）<input type="datetime-local" name="end_utc" class="form-control"></label>
+<label class="col-md-3">波段（区分大小写）<input name="band" class="form-control" placeholder="r"></label>
+<label class="col-md-3">曝光次数<input name="count" type="number" min="1" max="100" value="3" class="form-control"></label>
+<label class="col-md-3">每次曝光（秒）<input name="seconds" type="number" min="0.1" max="3600" step="0.1" value="60" class="form-control"></label>
+<label class="col-md-3">最大气团<input name="max_airmass" type="number" min="1" max="3" step="0.1" value="2" class="form-control"></label>
+</div>
+<details class="mt-3"><summary>多波段／多历元：填写完整 JSON，替代上方参数</summary><label class="d-block">完整观测计划<textarea name="specification" rows="8" class="form-control" placeholder='{"epochs":[{"start_utc":"...Z","end_utc":"...Z","max_airmass":2,"exposures":[{"band":"r","count":3,"seconds":60}]}]}'></textarea></label></details>
+<button class="btn btn-primary mt-2">保存本地草案</button></form>
+{% endif %}
+{% for p in plans %}<section class="card mb-3"><div class="card-body">
+<h2 class="h5">{{ p.target.name }} · {{ p.profile }}</h2>
+<p>外部编号：{{ p.external_id|default:'尚未确认' }} · 设施状态：{{ p.observation_state }} · 核对：{{ p.checked_at|default:'未查询' }}</p>
+{% if p.registration_payload %}<p class="alert alert-warning">设施已接收；尚未登记到下载处理链。导出不会重新提交观测。
+<a href="api/plans/{{ p.id }}/registration" class="btn btn-outline-secondary">导出登记单</a></p>{% endif %}
+<p class="text-break">草案摘要：<code>{{ p.sha256 }}</code></p>
+<details><summary>查看准确下发内容</summary><pre class="text-wrap">{{ p.payload }}</pre></details>
+<p>本地校验：{{ p.validated_at|default:'未校验' }} · 批准：{{ p.approved_at|default:'未批准' }} · 窗口上限：{{ p.expires_at }}</p>
+<form method="post">{% csrf_token %}<input type="hidden" name="plan_id" value="{{ p.id }}"><input type="hidden" name="sha256" value="{{ p.sha256 }}"><input type="hidden" name="key" value="{{ key }}-{{ forloop.counter }}">
+{% if not p.send_intent %}
+<button name="action" value="validate" class="btn btn-outline-primary">本地校验</button>
+{% if 'validate_remote' in p.available_actions %}<button name="action" value="validate_remote" class="btn btn-outline-primary">设施预检</button>{% endif %}
+<button name="action" value="approve" class="btn btn-outline-primary">批准此版本</button>
+{% if 'submit' in p.available_actions and p.approved_at %}<button name="action" value="submit" class="btn btn-warning">下发已批准版本</button>{% endif %}
+{% endif %}
+{% if p.external_id %}
+{% if 'status' in p.available_actions %}<button name="action" value="status" class="btn btn-outline-secondary">查询状态</button>{% endif %}
+{% if 'files' in p.available_actions %}<button name="action" value="files" class="btn btn-outline-secondary">查询文件</button>{% endif %}
+{% if 'cancel' in p.available_actions %}<label class="d-block mt-2">取消确认（填写 CANCEL {{ p.external_id }}）<input name="confirmation" class="form-control" autocomplete="off"></label><button name="action" value="cancel" class="btn btn-outline-danger mt-2">取消此请求</button>{% endif %}
+{% endif %}
+</form>
+<ul>{% for j in p.jobs.all %}<li>{{ j.created_at }} · {{ j.display_action }} · {{ j.display_state }}</li>{% endfor %}</ul>
+</div></section>{% empty %}<p>暂无可查看的观测草案。未启用设施时不会出现模拟观测。</p>{% endfor %}
+{% endblock %}

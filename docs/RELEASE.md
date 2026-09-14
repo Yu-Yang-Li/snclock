@@ -19,7 +19,12 @@
    `nginx -t` before any reload. Never replace `/api/` with a catch-all SN proxy.
 5. Keep `TELESCOPE_SNAPSHOT_PATH` empty until a real authorized report/assets
    pair is available. Never deploy a synthetic fixture as live telescope data.
-   No new DB models or migrations are introduced by the telescope adapter.
+   The read adapter has no models; the optional `telescope_ops` app introduces
+   migrations `0001_initial` and `0002_plan_registration_payload`. Back up the database and check its migration plan
+   before enabling operations. Keep all real-write switches off until facility
+   and proposal acceptance described in `TELESCOPE_OPERATIONS.md` is complete.
+   The registration export is a private pending record, not proof of downstream
+   registration. Verify the real server adapter before claiming automatic handoff.
 
 ## Real click-path acceptance
 

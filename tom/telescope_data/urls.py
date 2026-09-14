@@ -1,7 +1,8 @@
-from django.urls import path
+from django.urls import include, path
 from . import views
 
 urlpatterns = [
+    path('operations/', include('telescope_ops.urls')),
     path('', views.workspace, name='telescope-workspace'),
     path('api/v1/capabilities', views.capabilities, name='telescope-capabilities'),
     path('api/v1/targets', views.targets, name='telescope-targets'),

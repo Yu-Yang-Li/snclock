@@ -20,9 +20,10 @@ is the React application itself, not an iframe or a redirect to another site.
   included in this repository. STDWeb also remains separately deployed.
 
 The attachment contains an interface design and synthetic fixtures, not a
-deployed multi-facility API or production data feed. Telescope submission,
-cancellation, refresh and permission discovery are not implemented. No live
-observations have been submitted by this integration.
+deployed multi-facility API or production data feed. `tom/telescope_ops/` adds
+local drafts, approval, queued native transports and atomic report sync, disabled
+by default. See [operations and remaining acceptance](docs/TELESCOPE_OPERATIONS.md).
+No live observations have been submitted by this integration.
 
 ## Local checks
 
@@ -37,7 +38,7 @@ npm ci
 npm test
 npm run build
 cd ../tom
-python -B manage.py test telescope_data custom_code --settings=tom_snclock.test_settings --noinput
+python -B manage.py test telescope_data custom_code telescope_ops --settings=tom_snclock.test_settings --noinput
 ```
 
 Tests use an in-memory database and process-local cache; do not copy production
