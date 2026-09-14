@@ -3,7 +3,7 @@
 {% block plotly_js %}{% endblock %}
 {% block content %}
 <h1>观测请求</h1>
-<p>草案不会发往望远镜。校验、批准与下发分别记录；后台任务已接收不表示设施已接受。</p>
+{% if request.user.is_authenticated %}<p>草案不会发往望远镜。校验、批准与下发分别记录；后台任务已接收不表示设施已接受。</p>{% endif %}
 {% if notice %}<div class="alert alert-warning" role="status">{{ notice }}</div>{% endif %}
 {% if profiles and targets %}
 <form method="post" class="mb-4">{% csrf_token %}<input type="hidden" name="action" value="create">
@@ -43,5 +43,5 @@
 {% endif %}
 </form>
 <ul>{% for j in p.jobs.all %}<li>{{ j.created_at }} · {{ j.display_action }} · {{ j.display_state }}</li>{% endfor %}</ul>
-</div></section>{% empty %}<p>暂无可查看的观测草案。未启用设施时不会出现模拟观测。</p>{% endfor %}
+</div></section>{% empty %}{% if request.user.is_authenticated %}<p>暂无可查看的观测草案。未启用设施时不会出现模拟观测。</p>{% endif %}{% endfor %}
 {% endblock %}
