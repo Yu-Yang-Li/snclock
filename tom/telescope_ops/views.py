@@ -131,9 +131,11 @@ def workspace(request):
                     service.enqueue(request.user, plan, action, request.POST.get('key'), request.POST.get('sha256'))
             return redirect('telescope-operations')
     except (PermissionDenied, InvalidPlan, ValueError, TypeError, KeyError):
-        notice = '操作未执行：请检查登录、设施及目标授权、草案格式、审批状态和重复请求。未配置的设施不会调用远端。'
+        notice = ('观测请求工作台暂未向访客开放。' if not request.user.is_authenticated else
+                  '操作未执行：请检查登录、设施及目标授权、草案格式、审批状态和重复请求。未配置的设施不会调用远端。')
     response = render(request, 'telescope_data/operations.html', {'notice': notice, 'plans': plans,
-        'targets': targets, 'profiles': profiles.keys(), 'key': str(uuid.uuid4())})
+        'targets': targets, 'profiles': profiles.keys(), 'key': str(uuid.uuid4()),
+        'hide_login': not request.user.is_authenticated})
     response['Cache-Control'] = 'private, no-store'
     return response
 

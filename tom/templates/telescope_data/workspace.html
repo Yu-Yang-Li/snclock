@@ -8,7 +8,6 @@
 </header>
 {% if synthetic %}<div class="alert alert-warning">合成演示数据，不是真实观测，也不会下发观测。</div>{% endif %}
 {% if notice %}<div class="alert alert-info">{{ notice }}</div>{% endif %}
-{% if login_url %}<a class="btn btn-primary" href="{{ login_url }}">登录并返回此目标</a>{% endif %}
 {% if summary %}
 <p>日报生成：<time id="telescope-generated" datetime="{{ summary.generated_at }}">{{ summary.generated_at }}</time> · {{ summary.target_count }} 个目标 · {{ summary.photometry_count }} 个测光点</p>
 <p class="text-muted">当前为日报快照，不代表设施实时状态。观测下发和取消尚未启用。</p>

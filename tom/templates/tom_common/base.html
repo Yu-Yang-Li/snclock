@@ -42,9 +42,9 @@
           <ul class="navbar-nav ms-auto">
             {% include 'tom_common/navbar_content.html' %}
           </ul>
-          <ul class="navbar-nav" id="login-buttons">
+          {% if not hide_login %}<ul class="navbar-nav" id="login-buttons">
             {% include 'tom_common/partials/navbar_login.html' %}
-          </ul>
+          </ul>{% endif %}
         </div>
       </div>
     </nav>

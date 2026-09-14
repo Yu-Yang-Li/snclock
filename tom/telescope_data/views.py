@@ -154,10 +154,10 @@ def asset(request, asset_id):
 
 @require_GET
 def workspace(request):
-    context = {'synthetic': bool(getattr(settings, 'TELESCOPE_SNAPSHOT_SYNTHETIC', False))}
+    context = {'synthetic': bool(getattr(settings, 'TELESCOPE_SNAPSHOT_SYNTHETIC', False)),
+               'hide_login': not request.user.is_authenticated}
     if not request.user.is_authenticated:
-        context['notice'] = '请登录后查看望远镜数据。'
-        context['login_url'] = reverse('login') + '?' + urlencode({'next': request.get_full_path()})
+        context['notice'] = '望远镜测光、请求进展与质控数据暂未公开。'
     elif not request.user.is_staff:
         context['notice'] = '日报数据目前仅向获授权的管理人员开放。'
     else:
